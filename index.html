@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handwriting Recognizer AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Dancing+Script:wght@400;700&family=Inter:wght@400;500;600;700&family=Indie+Flower&family=Kalam:wght@400;700&family=Lora:ital,wght@0,400;0,700;1,400&family=Patrick+Hand&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.16.0",
+        "react/": "https://aistudiocdn.com/react@^19.1.1/",
+        "react": "https://aistudiocdn.com/react@^19.1.1",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.1.1/"
+      }
+    }
+    </script>
+<style>
+  :root {
+    --font-sans: 'Inter', sans-serif;
+    --font-handwriting-caveat: 'Caveat', cursive;
+    --font-handwriting-roboto: 'Roboto', sans-serif;
+    --font-handwriting-lora: 'Lora', serif;
+    --font-handwriting-patrick-hand: 'Patrick Hand', cursive;
+    --font-handwriting-indie-flower: 'Indie Flower', cursive;
+    --font-handwriting-dancing-script: 'Dancing Script', cursive;
+    --font-handwriting-kalam: 'Kalam', cursive;
+  }
+
+  body[data-theme='light'] {
+    --background: #f8fafc; /* slate-50 */
+    --foreground: #020817; /* slate-950 */
+    --card: #ffffff;
+    --card-foreground: #020817;
+    --popover: #ffffff;
+    --popover-foreground: #020817;
+    --primary: #2563eb; /* blue-600 */
+    --primary-hover: #1d4ed8; /* blue-700 */
+    --primary-foreground: #fafafa; /* slate-50 */
+    --secondary: #f1f5f9; /* slate-100 */
+    --secondary-foreground: #0f172a; /* slate-900 */
+    --muted: #e2e8f0; /* slate-200 */
+    --muted-foreground: #64748b; /* slate-500 */
+    --accent: #cbd5e1; /* slate-300 */
+    --accent-foreground: #0f172a; /* slate-900 */
+    --destructive: #ef4444; /* red-500 */
+    --destructive-hover: #dc2626; /* red-600 */
+    --destructive-foreground: #fafafa; /* slate-50 */
+    --border: #e2e8f0; /* slate-200 */
+    --input: #e2e8f0; /* slate-200 */
+    --ring: #94a3b8; /* slate-400 */
+    --radius: 0.75rem;
+  }
+
+  body[data-theme='dark'] {
+    --background: #020817; /* slate-950 */
+    --foreground: #fafafa; /* slate-50 */
+    --card: #0f172a; /* slate-900 */
+    --card-foreground: #fafafa;
+    --popover: #020817;
+    --popover-foreground: #fafafa;
+    --primary: #3b82f6; /* blue-500 */
+    --primary-hover: #2563eb; /* blue-600 */
+    --primary-foreground: #fafafa;
+    --secondary: #1e293b; /* slate-800 */
+    --secondary-foreground: #fafafa;
+    --muted: #1e293b; /* slate-800 */
+    --muted-foreground: #94a3b8; /* slate-400 */
+    --accent: #334155; /* slate-700 */
+    --accent-foreground: #fafafa;
+    --destructive: #dc2626; /* red-600 */
+    --destructive-hover: #b91c1c; /* red-700 */
+    --destructive-foreground: #fafafa;
+    --border: #1e293b; /* slate-800 */
+    --input: #1e293b; /* slate-800 */
+    --ring: #334155; /* slate-700 */
+    --radius: 0.75rem;
+  }
+
+  body {
+    overscroll-behavior: none;
+    font-family: var(--font-sans);
+    background-color: var(--background);
+  }
+
+  /* Custom utility classes to bridge CSS variables and Tailwind. */
+  /* This is needed because the Tailwind Play CDN doesn't support var() in tailwind.config.js */
+  .bg-background { background-color: var(--background); }
+  .text-foreground { color: var(--foreground); }
+  .bg-card { background-color: var(--card); }
+  .text-card-foreground { color: var(--card-foreground); }
+  .bg-popover { background-color: var(--popover); }
+  .text-popover-foreground { color: var(--popover-foreground); }
+  .bg-primary { background-color: var(--primary); }
+  .text-primary { color: var(--primary); }
+  .text-primary-foreground { color: var(--primary-foreground); }
+  .bg-secondary { background-color: var(--secondary); }
+  .text-secondary-foreground { color: var(--secondary-foreground); }
+  .bg-muted { background-color: var(--muted); }
+  .text-muted-foreground { color: var(--muted-foreground); }
+  .bg-accent { background-color: var(--accent); }
+  .text-accent-foreground { color: var(--accent-foreground); }
+  .bg-destructive { background-color: var(--destructive); }
+  .text-destructive { color: var(--destructive); }
+  .text-destructive-foreground { color: var(--destructive-foreground); }
+  .border-border { border-color: var(--border); }
+  .border-input { border-color: var(--input); }
+  .border-destructive { border-color: var(--destructive); }
+  .ring-ring { --tw-ring-color: var(--ring); }
+  .ring-offset-card { --tw-ring-offset-color: var(--card); }
+
+  /* Custom hover states */
+  .hover\:bg-accent:hover { background-color: var(--accent); }
+  .hover\:bg-secondary:hover { background-color: var(--secondary); }
+  .hover\:bg-destructive:hover { background-color: var(--destructive-hover); }
+  .hover\:text-destructive-foreground:hover { color: var(--destructive-foreground); }
+  .hover\:text-card-foreground:hover { color: var(--card-foreground); }
+  .hover\:bg-primary-hover:hover { background-color: var(--primary-hover); }
+
+</style>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "Handwriting Recognizer AI",
+  "description": "A web application that uses AI to recognize handwriting drawn on a canvas. The application supports both English and Nepali handwriting and displays the recognized text in a two-line copybook style.",
+  "requestFramePermissions": []
+}
